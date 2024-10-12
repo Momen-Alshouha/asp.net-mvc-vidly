@@ -62,12 +62,67 @@ namespace asp.net_vidly.Controllers
             return RedirectToAction("Details", "Customers", new { id = customer.CustomerId });
         }
 
+        // GET: Customers/Edit/{id}
+        [HttpGet]
+        [Route("customers/edit/{id}")]
+        public ActionResult Edit(int id)
+        {
+            var customer = _context.Customers.SingleOrDefault(c => c.CustomerId == id);
+
+            if (customer == null)
+                return HttpNotFound();
+
+            var viewModel = new CustomerFormViewModel
+            {
+                Customer = customer,
+                MembershipTypes = _context.MembershipTypes.ToList()
+            };
+
+            return View("Edit", viewModel);
+        }
+
+
+        // POST: Customers/Edit/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("customers/edit/{id}")]
+        public ActionResult Edit(Customer customer)
+        {
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new CustomerFormViewModel
+                {
+                    Customer = customer,
+                    MembershipTypes = _context.MembershipTypes.ToList()
+                };
+
+                return View("Edit", viewModel);
+            }
+
+            var customerInDb = _context.Customers.Single(c => c.CustomerId == customer.CustomerId);
+
+            if (customerInDb == null)
+                return HttpNotFound(); 
+
+            customerInDb.Name = customer.Name;
+            customerInDb.Email = customer.Email;
+            customerInDb.BirthDate = customer.BirthDate;
+            customerInDb.PhoneNumber = customer.PhoneNumber;
+            customerInDb.IsSubscribedToNewsLetter = customer.IsSubscribedToNewsLetter;
+            customerInDb.MembershipTypeId = customer.MembershipTypeId;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Customers");
+        }
+
+
 
         // GET: Customers/Details/id
         [Route("customers/details/{id}")]
         public ActionResult Details(int id)
         {
-            var customer = _context.Customers.Include(c => c.MembershipType).SingleOrDefault(c => c.CustomerId == id);
+            var customer = _context.Customers.Include(c => c.MembershipType).Single(c => c.CustomerId == id);
 
             if (customer == null)
                 return HttpNotFound();

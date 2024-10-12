@@ -1,14 +1,16 @@
 ﻿@model asp.net_vidly.ViewModels.CustomerFormViewModel
 
 @{
-    ViewBag.Title = "New Customer";
+    ViewBag.Title = "Edit Customer";
 }
 
-<h2>Add New Customer</h2>
+<h2>Edit Customer</h2>
 
-@using (Html.BeginForm("Create", "Customers", FormMethod.Post))
+@using (Html.BeginForm("Edit", "Customers", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.Customer.CustomerId)
 
     <div class="form-group">
         @Html.LabelFor(m => m.Customer.Name)
@@ -23,15 +25,20 @@
     </div>
 
     <div class="form-group">
+        @Html.LabelFor(m => m.Customer.BirthDate)
+        @Html.TextBoxFor(m => m.Customer.BirthDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+        @Html.ValidationMessageFor(m => m.Customer.BirthDate, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
         @Html.LabelFor(m => m.Customer.PhoneNumber)
         @Html.TextBoxFor(m => m.Customer.PhoneNumber, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Customer.PhoneNumber, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Customer.BirthDate)
-        @Html.TextBoxFor(m => m.Customer.BirthDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-        @Html.ValidationMessageFor(m => m.Customer.BirthDate, "", new { @class = "text-danger" })
+        @Html.LabelFor(m => m.Customer.IsSubscribedToNewsLetter)
+        @Html.CheckBoxFor(m => m.Customer.IsSubscribedToNewsLetter)
     </div>
 
     <div class="form-group">
@@ -39,12 +46,6 @@
         @Html.DropDownListFor(m => m.Customer.MembershipTypeId,
             new SelectList(Model.MembershipTypes, "MembershipTypeId", "Type"), "Select Membership Type", new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Customer.MembershipTypeId, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.CheckBoxFor(m => m.Customer.IsSubscribedToNewsLetter)
-        @Html.LabelFor(m => m.Customer.IsSubscribedToNewsLetter)
-        @Html.ValidationMessageFor(m => m.Customer.IsSubscribedToNewsLetter, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
