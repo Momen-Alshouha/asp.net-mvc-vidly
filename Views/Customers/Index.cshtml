@@ -7,6 +7,8 @@
 
 <h2>Customers List</h2>
 
+<a href="@Url.Action("Create", "Customers")" class="btn btn-success my-3">Add New Customer</a>
+
 @if (Model == null || !Model.Any())
 {
     <p>No customers available at the moment.</p>

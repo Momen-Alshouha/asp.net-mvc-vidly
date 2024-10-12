@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using asp.net_vidly.Models;
 using System.Data.Entity;
+using asp.net_vidly.ViewModels;
 
 namespace asp.net_vidly.Controllers
 {
@@ -22,6 +23,45 @@ namespace asp.net_vidly.Controllers
 
             return View(customers);
         }
+
+        // GET: Customers/Create
+        [HttpGet]
+        [Route("customers/create")]
+        public ActionResult Create()
+        {
+            var membershipTypes = _context.MembershipTypes.ToList();
+
+            var viewModel = new CustomerFormViewModel
+            {
+                MembershipTypes = membershipTypes
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Customers/Create
+        [HttpPost]
+        [Route("customers/create")]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Customer customer)
+        {
+            var viewModel = new CustomerFormViewModel
+            {
+                Customer = customer,
+                MembershipTypes = _context.MembershipTypes.ToList()
+            };
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            _context.Customers.Add(customer);
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", "Customers", new { id = customer.CustomerId });
+        }
+
 
         // GET: Customers/Details/id
         [Route("customers/details/{id}")]
