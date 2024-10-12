@@ -1,0 +1,25 @@
+﻿@model IEnumerable<asp.net_vidly.Models.Movie>
+
+<h2>Movies List</h2>
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Title</th>
+            <th>Genre</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in Model)
+        {
+            <tr>
+                <td>@movie.Title</td>
+                <td>@movie.Genre.Name</td>
+                <td>
+                    <a href="@Url.Action("Details", "Movies", new { id = movie.MovieId })" class="btn btn-primary btn-sm">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

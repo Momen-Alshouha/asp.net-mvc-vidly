@@ -1,0 +1,38 @@
+﻿@model asp.net_vidly.Models.Customer
+
+@{
+    ViewBag.Title = "Customer Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Customer Details</h2>
+
+<div>
+    <h3>@Model.Name</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+
+        <dt class="col-sm-3">Phone Number</dt>
+        <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+        <dt class="col-sm-3">Birth Date</dt>
+        <dd class="col-sm-9">
+            @(Model.BirthDate.HasValue ? Model.BirthDate.Value.ToString("MMMM dd, yyyy") : "No birth date available")
+        </dd>
+
+        <dt class="col-sm-3">Subscribed to Newsletter</dt>
+        <dd class="col-sm-9">@((Model.IsSubscribedToNewsLetter) ? "Yes" : "No")</dd>
+
+        <dt class="col-sm-3">Membership Type</dt>
+        <dd class="col-sm-9">@(Model.MembershipType!= null ? Model.MembershipType.Type : "N/A")</dd>
+
+        <dt class="col-sm-3">Discount Percantage</dt>
+        <dd class="col-sm-9">@Model.MembershipType.DiscountPercentage &#37;</dd>
+    </dl>
+</div>
+
+<p>
+    <a href="@Url.Action("Index", "Customers")" class="btn btn-primary">Back to List</a>
+</p>
