@@ -10,7 +10,8 @@
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationDataLossAllowed = true;
             ContextKey = "asp.net_vidly.Models.ApplicationDbContext";
         }
 
@@ -52,7 +53,8 @@
                 Email = "bob.johnson@example.com",
                 PhoneNumber = "5555555555",
                 IsSubscribedToNewsLetter = true,
-                MembershipTypeId = 3 // Quarterly Membership
+                MembershipTypeId = 3 ,// Quarterly Membership
+                 BirthDate = new DateTime(1985, 3, 12)
             },
             new Customer
             {
@@ -78,7 +80,8 @@
                 Email = "nancy.white@example.com",
                 PhoneNumber = "2222222222",
                 IsSubscribedToNewsLetter = false,
-                MembershipTypeId = 2 // Monthly Membership
+                MembershipTypeId = 2, // Monthly Membership
+                BirthDate = new DateTime(1985, 3, 12)
             },
             new Customer
             {
@@ -86,7 +89,8 @@
                 Email = "chris.green@example.com",
                 PhoneNumber = "1111111111",
                 IsSubscribedToNewsLetter = true,
-                MembershipTypeId = 3 // Quarterly Membership
+                MembershipTypeId = 3, // Quarterly Membership
+                BirthDate = new DateTime(1985, 3, 12)
             },
             new Customer
             {
@@ -103,7 +107,8 @@
                 Email = "mike.yellow@example.com",
                 PhoneNumber = "7777777777",
                 IsSubscribedToNewsLetter = true,
-                MembershipTypeId = 1 // Free Membership
+                MembershipTypeId = 1, // Free Membership
+                BirthDate = new DateTime(1985, 3, 12)
             },
             new Customer
             {
@@ -111,7 +116,8 @@
                 Email = "laura.black@example.com",
                 PhoneNumber = "8888888888",
                 IsSubscribedToNewsLetter = false,
-                MembershipTypeId = 2 // Monthly Membership
+                MembershipTypeId = 2, // Monthly Membership
+                BirthDate = new DateTime(1985, 3, 12)
             }
             );
 

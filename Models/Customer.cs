@@ -19,9 +19,10 @@ namespace asp.net_vidly.Models
         [EmailAddress]
         public string Email { get; set; }
 
+        [Required]
         [Display(Name = "Date of Birth")]
-        [DataType(DataType.Date)]
-        public DateTime? BirthDate { get; set; }
+        [Min18YearsIfAMember(ErrorMessage = "Customer must be at least 18 years old.")]
+        public DateTime BirthDate { get; set; }
 
         [Display(Name = "Phone Number")]
         [Required]
