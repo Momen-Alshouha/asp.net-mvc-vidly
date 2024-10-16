@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Newtonsoft.Json.Serialization;
 
 namespace asp.net_vidly
 {
@@ -18,6 +19,9 @@ namespace asp.net_vidly
             );
 
             config.Formatters.Remove(config.Formatters.XmlFormatter);
+
+            var jsonFormatter = config.Formatters.JsonFormatter;
+            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
     }
 }
