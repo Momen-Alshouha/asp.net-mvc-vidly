@@ -19,7 +19,7 @@
 
         <dt class="col-sm-3">Birth Date</dt>
         <dd class="col-sm-9">
-            @(Model.BirthDate.HasValue ? Model.BirthDate.Value.ToString("MMMM dd, yyyy") : "No birth date available")
+            @Model.BirthDate.ToString("MMMM dd, yyyy")
         </dd>
 
         <dt class="col-sm-3">Subscribed to Newsletter</dt>
