@@ -1,7 +1,9 @@
 ﻿using asp.net_vidly.Models;
-using System;
+using asp.net_vidly.Dtos;
 using System.Linq;
 using System.Web.Http;
+using AutoMapper;
+using System;
 
 namespace asp.net_vidly.Controllers.Api
 {
@@ -17,8 +19,10 @@ namespace asp.net_vidly.Controllers.Api
         // GET /api/customers
         public IHttpActionResult GetCustomers()
         {
-            var customers = _context.Customers.ToList();
-            return Ok(customers);
+            var customerDtos = _context.Customers
+                .ToList()
+                .Select(Mapper.Map<Customer, CustomerDto>);
+            return Ok(customerDtos);
         }
 
         // GET /api/customers/{id}
@@ -29,25 +33,28 @@ namespace asp.net_vidly.Controllers.Api
             if (customer == null)
                 return NotFound();
 
-            return Ok(customer);
+            return Ok(Mapper.Map<Customer, CustomerDto>(customer));
         }
 
         // POST /api/customers
         [HttpPost]
-        public IHttpActionResult CreateCustomer(Customer customer)
+        public IHttpActionResult CreateCustomer(CustomerDto customerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
+            var customer = Mapper.Map<CustomerDto, Customer>(customerDto);
             _context.Customers.Add(customer);
             _context.SaveChanges();
 
-            return Created(new Uri(Request.RequestUri + "/" + customer.CustomerId), customer);
+            customerDto.CustomerId = customer.CustomerId; // Update ID in DTO
+
+            return Created(new Uri(Request.RequestUri + "/" + customer.CustomerId), customerDto);
         }
 
         // PUT /api/customers/{id}
         [HttpPut]
-        public IHttpActionResult UpdateCustomer(int id, Customer customer)
+        public IHttpActionResult UpdateCustomer(int id, CustomerDto customerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -57,28 +64,23 @@ namespace asp.net_vidly.Controllers.Api
             if (customerInDb == null)
                 return NotFound();
 
-            customerInDb.Name = customer.Name;
-            customerInDb.Email = customer.Email;
-            customerInDb.BirthDate = customer.BirthDate;
-            customerInDb.PhoneNumber = customer.PhoneNumber;
-            customerInDb.MembershipTypeId = customer.MembershipTypeId;
-            customerInDb.IsSubscribedToNewsLetter = customer.IsSubscribedToNewsLetter;
+            Mapper.Map(customerDto, customerInDb);
 
             _context.SaveChanges();
 
-            return Ok(customerInDb);
+            return Ok();
         }
 
         // DELETE /api/customers/{id}
         [HttpDelete]
         public IHttpActionResult DeleteCustomer(int id)
         {
-            var customer = _context.Customers.SingleOrDefault(c => c.CustomerId == id);
+            var customerInDb = _context.Customers.SingleOrDefault(c => c.CustomerId == id);
 
-            if (customer == null)
+            if (customerInDb == null)
                 return NotFound();
 
-            _context.Customers.Remove(customer);
+            _context.Customers.Remove(customerInDb);
             _context.SaveChanges();
 
             return Ok();
