@@ -4,7 +4,7 @@
 
 <a href="@Url.Action("Create", "Movies")" class="btn btn-success my-3">New Movie</a>
 
-<table class="table table-striped table-bordered">
+<table id="moviesTable" class="table table-striped table-bordered">
     <thead class="thead-dark">
         <tr>
             <th>Title</th>
@@ -15,15 +15,46 @@
     <tbody>
         @foreach (var movie in Model)
         {
-            <tr>
+            <tr data-id="@movie.MovieId">
                 <td>@movie.Title</td>
                 <td>@movie.Genre.Name</td>
                 <td>
                     <a href="@Url.Action("Details", "Movies", new { id = movie.MovieId })" class="btn btn-primary btn-sm">Details</a>
-
                     <a href="@Url.Action("Edit", "Movies", new { id = movie.MovieId })" class="btn btn-warning btn-sm">Edit</a>
+                    <button class="btn btn-danger btn-sm delete-movie">Delete</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#moviesTable').DataTable();
+
+            $('.delete-movie').on('click', function () {
+                var row = $(this).closest('tr');
+                var movieId = row.data('id');
+
+                bootbox.confirm("Are you sure you want to delete this movie?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: '/api/movies/' + movieId,
+                            type: 'DELETE',
+                            success: function () {
+                                $('#moviesTable').DataTable().row(row).remove().draw();
+                                bootbox.alert("Movie deleted successfully.");
+                            },
+                            error: function () {
+                                bootbox.alert("An error occurred while deleting the movie.");
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
+
