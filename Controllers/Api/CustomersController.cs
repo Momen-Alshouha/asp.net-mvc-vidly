@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using AutoMapper;
 using System;
+using System.Data.Entity;
 
 namespace asp.net_vidly.Controllers.Api
 {
@@ -20,21 +21,26 @@ namespace asp.net_vidly.Controllers.Api
         public IHttpActionResult GetCustomers()
         {
             var customerDtos = _context.Customers
-                .ToList()
-                .Select(Mapper.Map<Customer, CustomerDto>);
+             .Include(c => c.MembershipType)
+             .ToList()
+             .Select(Mapper.Map<Customer, CustomerDto>);
+
             return Ok(customerDtos);
         }
 
         // GET /api/customers/{id}
         public IHttpActionResult GetCustomer(int id)
         {
-            var customer = _context.Customers.SingleOrDefault(c => c.CustomerId == id);
+            var customer = _context.Customers
+                .Include(c => c.MembershipType)
+                .SingleOrDefault(c => c.CustomerId == id);
 
             if (customer == null)
                 return NotFound();
 
             return Ok(Mapper.Map<Customer, CustomerDto>(customer));
         }
+
 
         // POST /api/customers
         [HttpPost]
@@ -47,7 +53,7 @@ namespace asp.net_vidly.Controllers.Api
             _context.Customers.Add(customer);
             _context.SaveChanges();
 
-            customerDto.CustomerId = customer.CustomerId; // Update ID in DTO
+            customerDto.CustomerId = customer.CustomerId;
 
             return Created(new Uri(Request.RequestUri + "/" + customer.CustomerId), customerDto);
         }

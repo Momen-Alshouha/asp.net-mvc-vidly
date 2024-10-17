@@ -32,5 +32,7 @@ namespace asp.net_vidly.Dtos
 
         [Required]
         public int MembershipTypeId { get; set; }
+        public MembershipTypeDto MembershipType { get; set; }
+
     }
 }
