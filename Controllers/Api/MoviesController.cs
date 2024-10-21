@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using AutoMapper;
 using System;
+using System.Data.Entity;
 
 namespace asp.net_vidly.Controllers.Api
 {
@@ -20,6 +21,7 @@ namespace asp.net_vidly.Controllers.Api
         public IHttpActionResult GetMovies()
         {
             var movieDtos = _context.Movies
+                .Include(m => m.Genre)
                 .ToList()
                 .Select(Mapper.Map<Movie, MovieDto>);
 

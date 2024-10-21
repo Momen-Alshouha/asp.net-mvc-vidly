@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using System.Xml.Linq;
 
 namespace asp.net_vidly.Dtos
 {
@@ -29,5 +25,12 @@ namespace asp.net_vidly.Dtos
 
         [Required]
         public int GenreId { get; set; }
+        public GenreDto Genre { get; set; }
+    }
+
+    public class GenreDto
+    {
+        public int GenreId { get; set; }
+        public string Name { get; set; }
     }
 }

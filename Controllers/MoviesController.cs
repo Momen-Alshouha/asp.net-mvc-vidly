@@ -119,10 +119,7 @@ public class MoviesController : Controller
     // GET: Movies
     public ActionResult Index()
     {
-        // Fetch movies from the database and include the Genre information (eager loading)
-        var movies = _context.Movies.Include(m => m.Genre).ToList();
-
-        return View(movies);
+        return View();
     }
 
     // GET: Movies/Details/{id}

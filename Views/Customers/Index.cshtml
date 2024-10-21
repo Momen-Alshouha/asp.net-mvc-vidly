@@ -1,6 +1,4 @@
-﻿@model List<asp.net_vidly.Models.Customer>
-
-@{
+﻿@{
     ViewBag.Title = "Customers";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -8,61 +6,76 @@
 <h2>Customers List</h2>
 
 <a href="@Url.Action("Create", "Customers")" class="btn btn-success my-3">New Customer</a>
-    <table id="customersTable" class="table table-striped table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Subscribed to Newsletter</th>
-                <th>Membership Type</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var customer in Model)
-            {
-                <tr data-id="@customer.CustomerId">
-                    <td>@customer.Name</td>
-                    <td>@customer.Email</td>
-                    <td>@customer.PhoneNumber</td>
-                    <td>@(customer.IsSubscribedToNewsLetter ? "Yes" : "No")</td>
-                    <td>@(customer.MembershipType != null ? customer.MembershipType.Type : "N/A")</td>
-                    <td>
-                        <a href="@Url.Action("Details", "Customers", new { id = customer.CustomerId })" class="btn btn-primary btn-sm">Details</a>
-                        <a href="@Url.Action("Edit", "Customers", new { id = customer.CustomerId })" class="btn btn-warning btn-sm">Edit</a>
-                        <button class="btn btn-danger btn-sm delete-customer">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
+<table id="customersTable" class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Subscribed to Newsletter</th>
+            <th>Membership Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be populated by jQuery AJAX -->
+    </tbody>
+</table>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#customersTable').DataTable();
+            $.ajax({
+                url: '/api/customers',
+                type: 'GET',
+                success: function (data) {
+                    var rows = '';
+                    $.each(data, function (index, customer) {
+                        var subscribed = customer.isSubscribedToNewsLetter ? 'Yes' : 'No';
+                        var membershipType = customer.membershipType ? customer.membershipType.type : 'N/A';
 
-            $('.delete-customer').on('click', function () {
-                var row = $(this).closest('tr');
-                var customerId = row.data('id');
+                        rows += `<tr data-id="${customer.customerId}">
+                                        <td>${customer.name}</td>
+                                        <td>${customer.email}</td>
+                                        <td>${customer.phoneNumber}</td>
+                                        <td>${subscribed}</td>
+                                        <td>${membershipType}</td>
+                                        <td>
+                                            <a href="/Customers/Details/${customer.customerId}" class="btn btn-primary btn-sm">Details</a>
+                                            <a href="/Customers/Edit/${customer.customerId}" class="btn btn-warning btn-sm">Edit</a>
+                                            <button class="btn btn-danger btn-sm delete-customer" data-id="${customer.customerId}">Delete</button>
+                                        </td>
+                                     </tr>`;
+                    });
 
-                bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
-                    if (result) {
-                        $.ajax({
-                            url: '/api/customers/' + customerId,
-                            type: 'DELETE',
-                            success: function () {
-                                $('#customersTable').DataTable().row(row).remove().draw();
-                                bootbox.alert("Customer deleted successfully.");
-                            },
-                            error: function () {
-                                bootbox.alert("An error occurred while deleting the customer.");
+                    $('#customersTable tbody').html(rows);
+
+                    $('#customersTable').DataTable();
+
+                    $('#customersTable').on('click', '.delete-customer', function () {
+                        var customerId = $(this).data('id');
+                        var row = $(this).closest('tr');
+
+                        bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/api/customers/' + customerId,
+                                    type: 'DELETE',
+                                    success: function () {
+                                        $('#customersTable').DataTable().row(row).remove().draw();
+                                        bootbox.alert("Customer deleted successfully.");
+                                    },
+                                    error: function () {
+                                        bootbox.alert("An error occurred while deleting the customer.");
+                                    }
+                                });
                             }
                         });
-                    }
-                });
+                    });
+                },
+                error: function () {
+                    bootbox.alert("An error occurred while fetching customer data.");
+                }
             });
         });
     </script>

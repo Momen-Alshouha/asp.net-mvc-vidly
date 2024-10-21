@@ -18,6 +18,9 @@ namespace asp.net_vidly.App_Start
             Mapper.CreateMap<Movie, MovieDto>();
             Mapper.CreateMap<MovieDto, Movie>();
 
+            Mapper.CreateMap<Genre, GenreDto>();
+            Mapper.CreateMap<GenreDto,Genre>();
+
             Mapper.CreateMap<MembershipType, MembershipTypeDto>();
         }
     }
