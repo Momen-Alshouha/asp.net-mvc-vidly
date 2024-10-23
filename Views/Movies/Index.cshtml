@@ -1,11 +1,15 @@
 ﻿@{
     ViewBag.Title = "Movies";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool isAdmin = User.IsInRole("Admin");
 }
 
 <h2>Movies List</h2>
 
-<a href="@Url.Action("Create", "Movies")" class="btn btn-success my-3">New Movie</a>
+@if (isAdmin)
+{
+    <a href="@Url.Action("Create", "Movies")" class="btn btn-success my-3">New Movie</a>
+}
 
 <table id="moviesTable" class="table table-striped table-bordered">
     <thead class="thead-dark">
@@ -23,7 +27,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            var table = $('#moviesTable').DataTable();
+            var isAdmin = @Html.Raw(isAdmin.ToString().ToLower());
 
             $.ajax({
                 url: '/api/movies',
@@ -37,11 +41,14 @@
                                         <td>${movie.title}</td>
                                         <td>${genreName}</td>
                                         <td>
-                                            <a href="/Movies/Details/${movie.movieId}" class="btn btn-primary btn-sm">Details</a>
-                                            <a href="/Movie/Edit/${movie.movieId}" class="btn btn-warning btn-sm">Edit</a>
-                                            <button class="btn btn-danger btn-sm delete-movie" data-id="${movie.movieId}">Delete</button>
-                                        </td>
-                                     </tr>`;
+                                            <a href="/Movies/Details/${movie.movieId}" class="btn btn-primary btn-sm">Details</a>`;
+
+                        if (isAdmin) {
+                            rows += `<a href="/Movie/Edit/${movie.movieId}" class="btn btn-warning btn-sm">Edit</a>
+                                     <button class="btn btn-danger btn-sm delete-movie" data-id="${movie.movieId}">Delete</button>`;
+                        }
+
+                        rows += `</td></tr>`;
                     });
 
                     $('#moviesTable tbody').html(rows);

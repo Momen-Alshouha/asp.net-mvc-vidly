@@ -40,6 +40,7 @@ namespace asp.net_vidly.Controllers.Api
         }
 
         // POST /api/movies
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IHttpActionResult CreateMovie(MovieDto movieDto)
         {
@@ -55,6 +56,7 @@ namespace asp.net_vidly.Controllers.Api
         }
 
         // PUT /api/movies/{id}
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public IHttpActionResult UpdateMovie(int id, MovieDto movieDto)
         {
@@ -73,6 +75,7 @@ namespace asp.net_vidly.Controllers.Api
         }
 
         // DELETE /api/movies/{id}
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public IHttpActionResult DeleteMovie(int id)
         {

@@ -24,6 +24,7 @@ namespace asp.net_vidly.Controllers
 
         // GET: Customers/Create
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("customers/create")]
         public ActionResult Create()
         {
@@ -39,6 +40,7 @@ namespace asp.net_vidly.Controllers
 
         // POST: Customers/Create
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("customers/create")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Customer customer)
@@ -62,6 +64,7 @@ namespace asp.net_vidly.Controllers
 
         // GET: Customers/Edit/{id}
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("customers/edit/{id}")]
         public ActionResult Edit(int id)
         {
@@ -79,9 +82,9 @@ namespace asp.net_vidly.Controllers
             return View("Edit", viewModel);
         }
 
-
         // POST: Customers/Edit/{id}
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         [Route("customers/edit/{id}")]
         public ActionResult Edit(Customer customer)
@@ -100,7 +103,7 @@ namespace asp.net_vidly.Controllers
             var customerInDb = _context.Customers.Single(c => c.CustomerId == customer.CustomerId);
 
             if (customerInDb == null)
-                return HttpNotFound(); 
+                return HttpNotFound();
 
             customerInDb.Name = customer.Name;
             customerInDb.Email = customer.Email;
@@ -114,8 +117,6 @@ namespace asp.net_vidly.Controllers
             return RedirectToAction("Index", "Customers");
         }
 
-
-
         // GET: Customers/Details/id
         [Route("customers/details/{id}")]
         public ActionResult Details(int id)
@@ -128,8 +129,24 @@ namespace asp.net_vidly.Controllers
             return View(customer);
         }
 
+        // POST: Customers/Delete/{id}
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            var customerInDb = _context.Customers.SingleOrDefault(c => c.CustomerId == id);
+
+            if (customerInDb == null)
+                return HttpNotFound();
+
+            _context.Customers.Remove(customerInDb);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
         // Dispose the DbContext when the controller is destroyed
-        // To avoid memory leaks, the Dispose method is overridden to properly dispose of the _context instance when the controller is no longer needed.
         protected override void Dispose(bool disposing)
         {
             if (disposing)

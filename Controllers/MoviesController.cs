@@ -13,73 +13,25 @@ public class MoviesController : Controller
         _context = new ApplicationDbContext();
     }
 
-    [Route("Movie/Edit/{id}")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Edit(Movie movie)
+    // GET: Movies
+    public ActionResult Index()
     {
-        /// <summary>
-        /// Handles form validation for the Edit Movie form.
-        /// If the form data is invalid, the form is redisplayed with the entered data and validation messages.
-        /// </summary>
-        /// <param name="movie">The movie object containing the form data submitted by the user.</param>
-        /// <returns>
-        /// If the form data is valid, the action proceeds to save the movie.
-        /// If the form data is invalid, the Edit form is redisplayed with the user's entered data and error messages.
-        /// </returns>
-        if (!ModelState.IsValid)
-        {
-            // Create a new instance of MovieFormViewModel
-            // The Movie object is set to the form data so that the user's input is retained
-            // The Genres list is reloaded from the database to populate the dropdown again
-            var viewModel = new MovieFormViewModel
-            {
-                Movie = movie,
-                Genres = _context.Genres.ToList()
-            };
-
-            // Return the Edit view, passing the viewModel to repopulate the form with the user's input and validation messages
-            return View("Edit", viewModel);
-        }
-
-
-        var movieInDb = _context.Movies.SingleOrDefault(m => m.MovieId == movie.MovieId);
-
-        if (movieInDb == null)
-            return HttpNotFound();
-
-        movieInDb.Title = movie.Title;
-        movieInDb.ReleaseDate = movie.ReleaseDate;
-        movieInDb.Director = movie.Director;
-        movieInDb.Rating = movie.Rating;
-        movieInDb.GenreId = movie.GenreId;
-
-        _context.SaveChanges();
-
-        return RedirectToAction("Index", "Movies");
+        return View();
     }
 
-    [Route("Movie/Edit/{id}")]
-    [HttpGet]
-    public ActionResult Edit(int id)
+    // GET: Movies/Details/{id}
+    public ActionResult Details(int id)
     {
-        var movie = _context.Movies.SingleOrDefault(m => m.MovieId == id);
+        var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(m => m.MovieId == id);
 
         if (movie == null)
             return HttpNotFound();
 
-        var genres = _context.Genres.ToList();
-
-        var viewModel = new MovieFormViewModel
-        {
-            Movie = movie,
-            Genres = genres
-        };
-
-        return View("Edit", viewModel);
+        return View(movie);
     }
 
 
+    [Authorize(Roles = "Admin")]
     [Route("Movie/Create")]
     [HttpGet]
     public ActionResult Create()
@@ -93,6 +45,7 @@ public class MoviesController : Controller
         return View("Create", viewModel);
     }
 
+    [Authorize(Roles = "Admin")]
     [Route("Movie/Create")]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -115,22 +68,73 @@ public class MoviesController : Controller
         return RedirectToAction("Index", "Movies");
     }
 
-
-    // GET: Movies
-    public ActionResult Index()
+    [Authorize(Roles = "Admin")]
+    [Route("Movie/Edit/{id}")]
+    [HttpGet]
+    public ActionResult Edit(int id)
     {
-        return View();
-    }
-
-    // GET: Movies/Details/{id}
-    public ActionResult Details(int id)
-    {
-        var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(m => m.MovieId == id);
+        var movie = _context.Movies.SingleOrDefault(m => m.MovieId == id);
 
         if (movie == null)
             return HttpNotFound();
 
-        return View(movie);
+        var genres = _context.Genres.ToList();
+
+        var viewModel = new MovieFormViewModel
+        {
+            Movie = movie,
+            Genres = genres
+        };
+
+        return View("Edit", viewModel);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [Route("Movie/Edit/{id}")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult Edit(Movie movie)
+    {
+        if (!ModelState.IsValid)
+        {
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("Edit", viewModel);
+        }
+
+        var movieInDb = _context.Movies.SingleOrDefault(m => m.MovieId == movie.MovieId);
+
+        if (movieInDb == null)
+            return HttpNotFound();
+
+        movieInDb.Title = movie.Title;
+        movieInDb.ReleaseDate = movie.ReleaseDate;
+        movieInDb.Director = movie.Director;
+        movieInDb.Rating = movie.Rating;
+        movieInDb.GenreId = movie.GenreId;
+
+        _context.SaveChanges();
+
+        return RedirectToAction("Index", "Movies");
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public ActionResult Delete(int id)
+    {
+        var movie = _context.Movies.SingleOrDefault(m => m.MovieId == id);
+
+        if (movie == null)
+            return HttpNotFound();
+
+        _context.Movies.Remove(movie);
+        _context.SaveChanges();
+
+        return RedirectToAction("Index", "Movies");
     }
 
     protected override void Dispose(bool disposing)
